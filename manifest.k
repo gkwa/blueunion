@@ -5,7 +5,32 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 
 {
     awscli = {
+        curl = {
+            notes = r"""This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+"""
+            script = r"""# 
+
+orig_dir=$(pwd)
+tmp=$(mktemp -d awscli-XXXX)
+cd $tmp
+curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+unzip awscliv2.zip
+sudo ./aws/install
+cd $orig_dir
+
+aws --version
+
+rm -rf $tmp
+
+"""
+        }
         "apt-get" = {
+            notes = r"""This installs aws cli v1 and I don't see deb package for v2.
+
+Use curl install instead.
+
+"""
             script = r"""sudo apt-get update
 sudo apt-get --assume-yes upgrade
 
