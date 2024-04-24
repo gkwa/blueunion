@@ -1,0 +1,35 @@
+kcl:
+  - pm: curl
+    script: |
+      curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
+  - pm: powershell
+    script: |
+      powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
+  - pm: homebrew
+    script: |
+      brew install kcl-lang/tap/kcl@0.8.0
+  - pm: scoop
+    script: |
+      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+      scoop install kcl-lang/kcl
+  - pm: go
+    install: |
+      go install kcl-lang.io/cli/cmd/kcl@latest
+  - pm: docker
+    script: |
+      docker run --rm -it kcllang/kcl
+  - pm: nix
+kcl-lsp:
+  - pm: curl
+    script: |
+      curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
+  - pm: powershell
+    script: |
+      powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
+  - pm: homebrew
+    script: |
+      brew install kcl-lang/tap/kcl-lsp@0.7.0
+  - pm: scoop
+    script: |
+      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+      scoop install kcl-lang/kcl-lsp
