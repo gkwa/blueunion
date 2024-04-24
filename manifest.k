@@ -4,6 +4,72 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    awscli = {
+        "apt-get" = {
+            script = r"""sudo apt-get update
+sudo apt-get --assume-yes upgrade
+
+if command -v apt-get &>/dev/null; then
+    for i in {1..5}; do
+        DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
+        sleep 1
+    done
+
+    dpkg -s awscli &>/dev/null
+elif command -v yum &>/dev/null; then
+    for i in {1..5}; do
+        yum -y install awscli && break
+        sleep 1
+    done
+else
+    echo "Neither apt nor yum package manager is available."
+fi
+
+"""
+        }
+    }
+    terragrunt = {
+        brew = {
+            script = r"""sudo --user linuxbrew --login brew install terragrunt
+"""
+        }
+        curl = {
+            script = r"""url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
+checksums_url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/SHA256SUMS
+
+tmp=$(mktemp -d ./terragrunt-XXXX)
+orig="$(pwd)"
+
+cd $tmp
+curl --fail --silent --show-error --location --output terragrunt_linux_amd64 $url
+curl --fail --silent --show-error --location --output SHA256SUMS $checksums_url
+
+if ! sha256sum --check SHA256SUMS --ignore-missing; then
+  echo "Checksum validation failed"
+  exit 1
+fi
+
+chmod +x terragrunt_linux_amd64
+
+install --mode 0755 --group root --owner root terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+cd $orig
+rm -rf $tmp
+
+terragrunt --version >/dev/null
+
+"""
+        }
+        curl = {
+            notes = r"""https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+"""
+            script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+"""
+        }
+    }
     kcl = {
         curl = {
             script = r"""curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
@@ -20,11 +86,8 @@ scoop install kcl-lang/kcl
         }
         go = {
             install = r"""
-            
-go install kcl-lang.io/cli/cmd/kcl@latest
-
-
-"""
+            go install kcl-lang.io/cli/cmd/kcl@latest
+            """
         }
         docker = {
             script = r"""docker run --rm -it kcllang/kcl

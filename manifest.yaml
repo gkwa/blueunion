@@ -1,3 +1,66 @@
+
+
+
+awscli:
+  apt-get:
+    script: |
+      sudo apt-get update
+      sudo apt-get --assume-yes upgrade
+
+      if command -v apt-get &>/dev/null; then
+          for i in {1..5}; do
+              DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
+              sleep 1
+          done
+
+          dpkg -s awscli &>/dev/null
+      elif command -v yum &>/dev/null; then
+          for i in {1..5}; do
+              yum -y install awscli && break
+              sleep 1
+          done
+      else
+          echo "Neither apt nor yum package manager is available."
+      fi
+
+terragrunt:
+  brew:
+    script: |
+      sudo --user linuxbrew --login brew install terragrunt
+  curl:
+    script: |
+      url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
+      checksums_url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/SHA256SUMS
+
+      tmp=$(mktemp -d ./terragrunt-XXXX)
+      orig="$(pwd)"
+
+      cd $tmp
+      curl --fail --silent --show-error --location --output terragrunt_linux_amd64 $url
+      curl --fail --silent --show-error --location --output SHA256SUMS $checksums_url
+
+      if ! sha256sum --check SHA256SUMS --ignore-missing; then
+        echo "Checksum validation failed"
+        exit 1
+      fi
+
+      chmod +x terragrunt_linux_amd64
+
+      install --mode 0755 --group root --owner root terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+      cd $orig
+      rm -rf $tmp
+
+      terragrunt --version >/dev/null
+
+  curl:
+    notes: |
+      https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+    script: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+
 kcl:
   curl:
     script: |
@@ -10,7 +73,8 @@ kcl:
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl
   go:
-    install: |
+    install: |2
+
       go install kcl-lang.io/cli/cmd/kcl@latest
   docker:
     script: |+
