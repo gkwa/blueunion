@@ -16,16 +16,9 @@ kcl:
     script: |+
       docker run --rm -it kcllang/kcl
 
-
   powershell:
-    script: |
+    script: |+
       powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
-
-
-
-
-
-
 
 kcl-lsp:
   curl:
@@ -41,7 +34,6 @@ kcl-lsp:
     script: |-
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl-lsp
-
 gpg:
   apt-get:
     script: |
