@@ -1,0 +1,3 @@
+exec blueunion --verbose
+! stdout .
+stderr level=INFO

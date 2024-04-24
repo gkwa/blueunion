@@ -1,0 +1,3 @@
+exec blueunion
+! stdout .
+! stderr .

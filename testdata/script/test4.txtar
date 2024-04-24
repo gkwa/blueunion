@@ -1,0 +1,4 @@
+exec blueunion --verbose --verbose
+! stdout .
+stderr level=DEBUG
+stderr level=INFO
