@@ -25,17 +25,10 @@ scoop install kcl-lang/kcl
         docker = {
             script = r"""docker run --rm -it kcllang/kcl
 
-
 """
         }
         powershell = {
             script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
-
-
-
-
-
-
 
 """
         }
