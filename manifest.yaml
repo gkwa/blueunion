@@ -4,8 +4,6 @@ awscli:
       This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
     
     script: |
-      # 
-
       orig_dir=$(pwd)
       tmp=$(mktemp -d awscli-XXXX)
       cd $tmp

@@ -9,9 +9,7 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
             notes = r"""This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 """
-            script = r"""# 
-
-orig_dir=$(pwd)
+            script = r"""orig_dir=$(pwd)
 tmp=$(mktemp -d awscli-XXXX)
 cd $tmp
 curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
