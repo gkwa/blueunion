@@ -19,7 +19,11 @@ scoop install kcl-lang/kcl
 """
         }
         go = {
-            install = r"""go install kcl-lang.io/cli/cmd/kcl@latest
+            install = r"""
+            
+go install kcl-lang.io/cli/cmd/kcl@latest
+
+
 """
         }
         docker = {
