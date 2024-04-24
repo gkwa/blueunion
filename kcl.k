@@ -9,10 +9,6 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
             script = r"""curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
 """
         }
-        powershell = {
-            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
-"""
-        }
         homebrew = {
             script = r"""brew install kcl-lang/tap/kcl@0.8.0
 """
@@ -28,6 +24,18 @@ scoop install kcl-lang/kcl
         }
         docker = {
             script = r"""docker run --rm -it kcllang/kcl
+
+
+"""
+        }
+        powershell = {
+            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
+
+
+
+
+
+
 
 """
         }
@@ -48,6 +56,42 @@ scoop install kcl-lang/kcl
         scoop = {
             script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
 scoop install kcl-lang/kcl-lsp"""
+        }
+    }
+    gpg = {
+        "apt-get" = {
+            script = r"""sudo apt-get install -y gnupg
+"""
+        }
+        dnf = {
+            script = r"""sudo dnf install -y gnupg
+"""
+        }
+        yum = {
+            script = r"""sudo yum install -y gnupg
+"""
+        }
+        pacman = {
+            script = r"""sudo pacman -Sy --noconfirm gnupg
+"""
+        }
+        zypper = {
+            script = r"""sudo zypper install -y gnupg
+"""
+        }
+        homebrew = {
+            script = r"""brew install gnupg
+"""
+        }
+        pkg = {
+            freebsd = {
+                script = r"""sudo pkg install -y gnupg
+"""
+            }
+            openbsd = {
+                script = r"""sudo pkg_add gnupg
+"""
+            }
         }
     }
 }

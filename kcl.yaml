@@ -1,35 +1,70 @@
 kcl:
- curl:
-   script: |
-     curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
- powershell:
-   script: |
-     powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
- homebrew:
-   script: |
-     brew install kcl-lang/tap/kcl@0.8.0
- scoop:
-   script: |
-     scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-     scoop install kcl-lang/kcl
- go:
-   install: |
-     go install kcl-lang.io/cli/cmd/kcl@latest
- docker:
-   script: |
-     docker run --rm -it kcllang/kcl
+  curl:
+    script: |
+      curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
+  homebrew:
+    script: |
+      brew install kcl-lang/tap/kcl@0.8.0
+  scoop:
+    script: |
+      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+      scoop install kcl-lang/kcl
+  go:
+    install: |
+      go install kcl-lang.io/cli/cmd/kcl@latest
+  docker:
+    script: |+
+      docker run --rm -it kcllang/kcl
+
+
+  powershell:
+    script: |
+      powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
+
+
+
+
+
+
 
 kcl-lsp:
- curl:
-   script: |
-     curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
- powershell:
-   script: |
-     powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
- homebrew:
-   script: |
-     brew install kcl-lang/tap/kcl-lsp@0.7.0
- scoop:
-   script: |
-     scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-     scoop install kcl-lang/kcl-lsp
+  curl:
+    script: |
+      curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
+  powershell:
+    script: |
+      powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
+  homebrew:
+    script: |
+      brew install kcl-lang/tap/kcl-lsp@0.7.0
+  scoop:
+    script: |-
+      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+      scoop install kcl-lang/kcl-lsp
+
+gpg:
+  apt-get:
+    script: |
+      sudo apt-get install -y gnupg
+  dnf:
+    script: |
+      sudo dnf install -y gnupg
+  yum:
+    script: |
+      sudo yum install -y gnupg
+  pacman:
+    script: |
+      sudo pacman -Sy --noconfirm gnupg
+  zypper:
+    script: |
+      sudo zypper install -y gnupg
+  homebrew:
+    script: |
+      brew install gnupg
+  pkg:
+    freebsd:
+      script: |
+        sudo pkg install -y gnupg
+    openbsd:
+      script: |
+        sudo pkg_add gnupg
