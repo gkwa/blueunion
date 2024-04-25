@@ -1,3 +1,36 @@
+helm:
+  curl:
+    script: |
+      #!/bin/bash
+
+      ARCH=linux-amd64
+
+      version=$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)
+
+      curl https://raw.githubusercontent.com/helm/helm/main/KEYS | gpg --import
+      curl -sSLO https://github.com/helm/helm/releases/download/${version}/helm-${version}-${ARCH}.tar.gz.asc
+      curl -sSLO https://get.helm.sh/helm-${version}-${ARCH}.tar.gz
+
+      gpg --verify helm-${version}-${ARCH}.tar.gz.asc helm-${version}-${ARCH}.tar.gz
+
+      if [ $? -ne 0 ]; then
+          echo "Signature verification failed. The release archive may be corrupted or tampered with."
+          exit 1
+      fi
+
+      echo "Signature verification succeeded. The release archive is authentic."
+
+      base=helm-${version}-${ARCH}
+      targz=$base.tar.gz
+      mkdir -p /tmp/$base
+      tar xzf /tmp/$targz --strip-components=1 -C /tmp/$base
+      install --mode 755 /tmp/$base/helm /usr/local/bin/helm
+      helm version
+      helm repo add stable https://charts.helm.sh/stable
+      helm search repo stable
+      rm -rf /tmp/$base
+      rm -rf /tmp/$targz
+
 awscli:
   curl:
     notes: |
