@@ -1,10 +1,38 @@
-awscli:
+packer:
   curl:
-    script: |
+    script: |+
       #!/usr/bin/env bash
 
-      # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+      # https://developer.hashicorp.com/packer/install
+      # https://releases.hashicorp.com/packer/
 
+      cd /tmp
+
+      url=https://releases.hashicorp.com/packer/
+      ver=$(curl -s $url | grep -v alpha | grep -oE 'packer_[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n1 | cut -d'_' -f2)
+      dl_url="${url}${ver}/packer_${ver}_linux_amd64.zip"
+
+      echo "Downloading Packer ${ver}..."
+      curl -sL $dl_url -o packer.zip
+
+      echo "Unpacking Packer..."
+      unzip -q packer.zip
+
+      echo "Installing Packer to /usr/local/bin/packer..."
+      install --mode 0755 --group root --owner root packer /usr/local/bin/packer
+
+      echo "Cleaning up..."
+      rm packer.zip
+      rm -f /tmp/packer
+
+      packer --version
+
+
+awscli:
+  curl:
+    notes: |
+      This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+    script: |
       orig_dir=$(pwd)
       tmp=$(mktemp -d awscli-XXXX)
       cd $tmp
@@ -16,7 +44,30 @@ awscli:
       aws --version
 
       rm -rf $tmp
+  apt-get:
+    notes: |
+      This installs aws cli v1 and I don't see deb package for v2.
 
+      Use curl install instead.
+    script: |
+      sudo apt-get update
+      sudo apt-get --assume-yes upgrade
+
+      if command -v apt-get &>/dev/null; then
+          for i in {1..5}; do
+              DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
+              sleep 1
+          done
+
+          dpkg -s awscli &>/dev/null
+      elif command -v yum &>/dev/null; then
+          for i in {1..5}; do
+              yum -y install awscli && break
+              sleep 1
+          done
+      else
+          echo "Neither apt nor yum package manager is available."
+      fi
 sops:
   curl:
     script: |
@@ -47,8 +98,6 @@ sops:
 
       cd $orig_dir
       rm -rf $tmp
-
-
 terragrunt:
   brew:
     script: |
@@ -60,7 +109,6 @@ terragrunt:
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       unzip awscliv2.zip
       sudo ./aws/install
-
 helm:
   curl:
     script: |
@@ -93,51 +141,6 @@ helm:
       helm search repo stable
       rm -rf /tmp/$base
       rm -rf /tmp/$targz
-
-awscli:
-  curl:
-    notes: |
-      This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-
-    script: |
-      orig_dir=$(pwd)
-      tmp=$(mktemp -d awscli-XXXX)
-      cd $tmp
-      curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
-      unzip awscliv2.zip
-      sudo ./aws/install
-      cd $orig_dir
-
-      aws --version
-
-      rm -rf $tmp
-
-  apt-get:
-    notes: |
-      This installs aws cli v1 and I don't see deb package for v2.
-
-      Use curl install instead.
-
-    script: |
-      sudo apt-get update
-      sudo apt-get --assume-yes upgrade
-
-      if command -v apt-get &>/dev/null; then
-          for i in {1..5}; do
-              DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
-              sleep 1
-          done
-
-          dpkg -s awscli &>/dev/null
-      elif command -v yum &>/dev/null; then
-          for i in {1..5}; do
-              yum -y install awscli && break
-              sleep 1
-          done
-      else
-          echo "Neither apt nor yum package manager is available."
-      fi
-
 kcl:
   curl:
     script: |
@@ -150,15 +153,15 @@ kcl:
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl
   go:
-    script: |
+    script: |+
       go install kcl-lang.io/cli/cmd/kcl@latest
-  
+
   docker:
-    script: |
+    script: |+
       docker run --rm -it kcllang/kcl
 
   powershell:
-    script: |
+    script: |+
       powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
 
 kcl-lsp:
@@ -172,75 +175,7 @@ kcl-lsp:
     script: |
       brew install kcl-lang/tap/kcl-lsp@0.7.0
   scoop:
-    script: |
-      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-      scoop install kcl-lang/kcl-lsp
-gpg:
-  apt-get:
-    script: |
-      sudo apt-get install -y gnupg
-  dnf:
-    script: |
-      sudo dnf install -y gnupg
-  yum:
-    script: |
-      sudo yum install -y gnupg
-  pacman:
-    script: |
-      sudo pacman -Sy --noconfirm gnupg
-  zypper:
-    script: |
-      sudo zypper install -y gnupg
-  homebrew:
-    script: |
-      brew install gnupg
-  pkg:
-    freebsd:
-      script: |
-        sudo pkg install -y gnupg
-    openbsd:
-      script: |
-        sudo pkg_add gnupg
-    script: |
-      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      unzip awscliv2.zip
-      sudo ./aws/install
-
-kcl:
-  curl:
-    script: |
-      curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
-  homebrew:
-    script: |
-      brew install kcl-lang/tap/kcl@0.8.0
-  scoop:
-    script: |
-      scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-      scoop install kcl-lang/kcl
-  go:
-    script: |
-      go install kcl-lang.io/cli/cmd/kcl@latest
-
-  docker:
-    script: |
-      docker run --rm -it kcllang/kcl
-
-  powershell:
-    script: |
-      powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
-
-kcl-lsp:
-  curl:
-    script: |
-      curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
-  powershell:
-    script: |
-      powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
-  homebrew:
-    script: |
-      brew install kcl-lang/tap/kcl-lsp@0.7.0
-  scoop:
-    script: |
+    script: |+
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl-lsp
 

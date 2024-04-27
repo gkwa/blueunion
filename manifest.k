@@ -4,13 +4,43 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
-    awscli = {
+    packer = {
         curl = {
             script = r"""#!/usr/bin/env bash
 
-# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+# https://developer.hashicorp.com/packer/install
+# https://releases.hashicorp.com/packer/
 
-orig_dir=$(pwd)
+cd /tmp
+
+url=https://releases.hashicorp.com/packer/
+ver=$(curl -s $url | grep -v alpha | grep -oE 'packer_[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n1 | cut -d'_' -f2)
+dl_url="${url}${ver}/packer_${ver}_linux_amd64.zip"
+
+echo "Downloading Packer ${ver}..."
+curl -sL $dl_url -o packer.zip
+
+echo "Unpacking Packer..."
+unzip -q packer.zip
+
+echo "Installing Packer to /usr/local/bin/packer..."
+install --mode 0755 --group root --owner root packer /usr/local/bin/packer
+
+echo "Cleaning up..."
+rm packer.zip
+rm -f /tmp/packer
+
+packer --version
+
+
+"""
+        }
+    }
+    awscli = {
+        curl = {
+            notes = r"""This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+"""
+            script = r"""orig_dir=$(pwd)
 tmp=$(mktemp -d awscli-XXXX)
 cd $tmp
 curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
@@ -21,7 +51,31 @@ cd $orig_dir
 aws --version
 
 rm -rf $tmp
+"""
+        }
+        "apt-get" = {
+            notes = r"""This installs aws cli v1 and I don't see deb package for v2.
 
+Use curl install instead.
+"""
+            script = r"""sudo apt-get update
+sudo apt-get --assume-yes upgrade
+
+if command -v apt-get &>/dev/null; then
+    for i in {1..5}; do
+        DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
+        sleep 1
+    done
+
+    dpkg -s awscli &>/dev/null
+elif command -v yum &>/dev/null; then
+    for i in {1..5}; do
+        yum -y install awscli && break
+        sleep 1
+    done
+else
+    echo "Neither apt nor yum package manager is available."
+fi
 """
         }
     }
@@ -54,8 +108,6 @@ sops --version
 
 cd $orig_dir
 rm -rf $tmp
-
-
 """
         }
     }
@@ -70,7 +122,6 @@ rm -rf $tmp
             script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
-
 """
         }
     }
@@ -105,144 +156,6 @@ helm repo add stable https://charts.helm.sh/stable
 helm search repo stable
 rm -rf /tmp/$base
 rm -rf /tmp/$targz
-
-"""
-        }
-    }
-    awscli = {
-        curl = {
-            notes = r"""This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-
-"""
-            script = r"""orig_dir=$(pwd)
-tmp=$(mktemp -d awscli-XXXX)
-cd $tmp
-curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
-unzip awscliv2.zip
-sudo ./aws/install
-cd $orig_dir
-
-aws --version
-
-rm -rf $tmp
-
-"""
-        }
-        "apt-get" = {
-            notes = r"""This installs aws cli v1 and I don't see deb package for v2.
-
-Use curl install instead.
-
-"""
-            script = r"""sudo apt-get update
-sudo apt-get --assume-yes upgrade
-
-if command -v apt-get &>/dev/null; then
-    for i in {1..5}; do
-        DEBIAN_FRONTEND=noninteractive apt-get -y install awscli && break
-        sleep 1
-    done
-
-    dpkg -s awscli &>/dev/null
-elif command -v yum &>/dev/null; then
-    for i in {1..5}; do
-        yum -y install awscli && break
-        sleep 1
-    done
-else
-    echo "Neither apt nor yum package manager is available."
-fi
-
-"""
-        }
-    }
-    kcl = {
-        curl = {
-            script = r"""curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
-"""
-        }
-        homebrew = {
-            script = r"""brew install kcl-lang/tap/kcl@0.8.0
-"""
-        }
-        scoop = {
-            script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-scoop install kcl-lang/kcl
-"""
-        }
-        go = {
-            script = r"""go install kcl-lang.io/cli/cmd/kcl@latest
-
-"""
-        }
-        docker = {
-            script = r"""docker run --rm -it kcllang/kcl
-
-"""
-        }
-        powershell = {
-            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
-
-"""
-        }
-    }
-    "kcl-lsp" = {
-        curl = {
-            script = r"""curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
-"""
-        }
-        powershell = {
-            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
-"""
-        }
-        homebrew = {
-            script = r"""brew install kcl-lang/tap/kcl-lsp@0.7.0
-"""
-        }
-        scoop = {
-            script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-scoop install kcl-lang/kcl-lsp
-"""
-        }
-    }
-    gpg = {
-        "apt-get" = {
-            script = r"""sudo apt-get install -y gnupg
-"""
-        }
-        dnf = {
-            script = r"""sudo dnf install -y gnupg
-"""
-        }
-        yum = {
-            script = r"""sudo yum install -y gnupg
-"""
-        }
-        pacman = {
-            script = r"""sudo pacman -Sy --noconfirm gnupg
-"""
-        }
-        zypper = {
-            script = r"""sudo zypper install -y gnupg
-"""
-        }
-        homebrew = {
-            script = r"""brew install gnupg
-"""
-        }
-        pkg = {
-            freebsd = {
-                script = r"""sudo pkg install -y gnupg
-"""
-            }
-            openbsd = {
-                script = r"""sudo pkg_add gnupg
-"""
-            }
-            script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-
 """
         }
     }
