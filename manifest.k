@@ -4,6 +4,27 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    awscli = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+orig_dir=$(pwd)
+tmp=$(mktemp -d awscli-XXXX)
+cd $tmp
+curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+unzip awscliv2.zip
+sudo ./aws/install
+cd $orig_dir
+
+aws --version
+
+rm -rf $tmp
+
+"""
+        }
+    }
     sops = {
         curl = {
             script = r"""#!/usr/bin/env bash
@@ -39,30 +60,16 @@ rm -rf $tmp
         }
     }
     terragrunt = {
+        brew = {
+            script = r"""sudo --user linuxbrew --login brew install terragrunt
+"""
+        }
         curl = {
-            script = r"""url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
-checksums_url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/SHA256SUMS
-
-tmp=$(mktemp -d ./terragrunt-XXXX)
-orig="$(pwd)"
-
-cd $tmp
-curl --fail --silent --show-error --location --output terragrunt_linux_amd64 $url
-curl --fail --silent --show-error --location --output SHA256SUMS $checksums_url
-
-if ! sha256sum --check SHA256SUMS --ignore-missing; then
-    echo "Checksum validation failed"
-    exit 1
-fi
-
-chmod +x terragrunt_linux_amd64
-
-install --mode 0755 --group root --owner root terragrunt_linux_amd64 /usr/local/bin/terragrunt
-
-cd $orig
-rm -rf $tmp
-
-terragrunt --version >/dev/null
+            notes = r"""https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+"""
+            script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 
 """
         }
@@ -149,48 +156,6 @@ fi
 """
         }
     }
-    terragrunt = {
-        brew = {
-            script = r"""sudo --user linuxbrew --login brew install terragrunt
-"""
-        }
-        curl = {
-            script = r"""url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
-checksums_url=https://github.com/gruntwork-io/terragrunt/releases/latest/download/SHA256SUMS
-
-tmp=$(mktemp -d ./terragrunt-XXXX)
-orig="$(pwd)"
-
-cd $tmp
-curl --fail --silent --show-error --location --output terragrunt_linux_amd64 $url
-curl --fail --silent --show-error --location --output SHA256SUMS $checksums_url
-
-if ! sha256sum --check SHA256SUMS --ignore-missing; then
-  echo "Checksum validation failed"
-  exit 1
-fi
-
-chmod +x terragrunt_linux_amd64
-
-install --mode 0755 --group root --owner root terragrunt_linux_amd64 /usr/local/bin/terragrunt
-
-cd $orig
-rm -rf $tmp
-
-terragrunt --version >/dev/null
-
-"""
-        }
-        curl = {
-            notes = r"""https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-"""
-            script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-
-"""
-        }
-    }
     kcl = {
         curl = {
             script = r"""curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
@@ -206,9 +171,9 @@ scoop install kcl-lang/kcl
 """
         }
         go = {
-            install = r"""
-            go install kcl-lang.io/cli/cmd/kcl@latest
-            """
+            script = r"""go install kcl-lang.io/cli/cmd/kcl@latest
+
+"""
         }
         docker = {
             script = r"""docker run --rm -it kcllang/kcl
@@ -236,7 +201,99 @@ scoop install kcl-lang/kcl
         }
         scoop = {
             script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
-scoop install kcl-lang/kcl-lsp"""
+scoop install kcl-lang/kcl-lsp
+"""
+        }
+    }
+    gpg = {
+        "apt-get" = {
+            script = r"""sudo apt-get install -y gnupg
+"""
+        }
+        dnf = {
+            script = r"""sudo dnf install -y gnupg
+"""
+        }
+        yum = {
+            script = r"""sudo yum install -y gnupg
+"""
+        }
+        pacman = {
+            script = r"""sudo pacman -Sy --noconfirm gnupg
+"""
+        }
+        zypper = {
+            script = r"""sudo zypper install -y gnupg
+"""
+        }
+        homebrew = {
+            script = r"""brew install gnupg
+"""
+        }
+        pkg = {
+            freebsd = {
+                script = r"""sudo pkg install -y gnupg
+"""
+            }
+            openbsd = {
+                script = r"""sudo pkg_add gnupg
+"""
+            }
+            script = r"""curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+"""
+        }
+    }
+    kcl = {
+        curl = {
+            script = r"""curl -fsSL https://kcl-lang.io/script/install-cli.sh | /bin/bash
+"""
+        }
+        homebrew = {
+            script = r"""brew install kcl-lang/tap/kcl@0.8.0
+"""
+        }
+        scoop = {
+            script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+scoop install kcl-lang/kcl
+"""
+        }
+        go = {
+            script = r"""go install kcl-lang.io/cli/cmd/kcl@latest
+
+"""
+        }
+        docker = {
+            script = r"""docker run --rm -it kcllang/kcl
+
+"""
+        }
+        powershell = {
+            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
+
+"""
+        }
+    }
+    "kcl-lsp" = {
+        curl = {
+            script = r"""curl -fsSL https://kcl-lang.io/script/install-kcl-lsp.sh | /bin/bash
+"""
+        }
+        powershell = {
+            script = r"""powershell -Command "iwr -useb https://kcl-lang.io/script/install-kcl-lsp.ps1 | iex"
+"""
+        }
+        homebrew = {
+            script = r"""brew install kcl-lang/tap/kcl-lsp@0.7.0
+"""
+        }
+        scoop = {
+            script = r"""scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
+scoop install kcl-lang/kcl-lsp
+
+"""
         }
     }
     gpg = {

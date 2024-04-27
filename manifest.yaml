@@ -1,6 +1,25 @@
+awscli:
+  curl:
+    script: |
+      #!/usr/bin/env bash
+
+      # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+      orig_dir=$(pwd)
+      tmp=$(mktemp -d awscli-XXXX)
+      cd $tmp
+      curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+      unzip awscliv2.zip
+      sudo ./aws/install
+      cd $orig_dir
+
+      aws --version
+
+      rm -rf $tmp
+
 sops:
   curl:
-    script: |+
+    script: |
       #!/usr/bin/env bash
 
       # https://github.com/getsops/sops/releases
@@ -37,14 +56,14 @@ terragrunt:
   curl:
     notes: |
       https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-    script: |+
+    script: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       unzip awscliv2.zip
       sudo ./aws/install
 
 helm:
   curl:
-    script: |+
+    script: |
       #!/bin/bash
 
       ARCH=linux-amd64
@@ -77,10 +96,10 @@ helm:
 
 awscli:
   curl:
-    notes: |+
+    notes: |
       This installs awscli v2 gleaned from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-    script: |+
+    script: |
       orig_dir=$(pwd)
       tmp=$(mktemp -d awscli-XXXX)
       cd $tmp
@@ -94,12 +113,12 @@ awscli:
       rm -rf $tmp
 
   apt-get:
-    notes: |+
+    notes: |
       This installs aws cli v1 and I don't see deb package for v2.
 
       Use curl install instead.
 
-    script: |+
+    script: |
       sudo apt-get update
       sudo apt-get --assume-yes upgrade
 
@@ -131,13 +150,15 @@ kcl:
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl
   go:
-    install: "\n            go install kcl-lang.io/cli/cmd/kcl@latest\n            "
+    script: |
+      go install kcl-lang.io/cli/cmd/kcl@latest
+  
   docker:
-    script: |+
+    script: |
       docker run --rm -it kcllang/kcl
 
   powershell:
-    script: |+
+    script: |
       powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
 
 kcl-lsp:
@@ -151,7 +172,7 @@ kcl-lsp:
     script: |
       brew install kcl-lang/tap/kcl-lsp@0.7.0
   scoop:
-    script: |-
+    script: |
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl-lsp
 gpg:
@@ -180,7 +201,6 @@ gpg:
     openbsd:
       script: |
         sudo pkg_add gnupg
-rted-install.html
     script: |
       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       unzip awscliv2.zip
@@ -198,15 +218,15 @@ kcl:
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl
   go:
-    install: |2
-
+    script: |
       go install kcl-lang.io/cli/cmd/kcl@latest
+
   docker:
-    script: |+
+    script: |
       docker run --rm -it kcllang/kcl
 
   powershell:
-    script: |+
+    script: |
       powershell -Command "iwr -useb https://kcl-lang.io/script/install-cli.ps1 | iex"
 
 kcl-lsp:
@@ -220,9 +240,10 @@ kcl-lsp:
     script: |
       brew install kcl-lang/tap/kcl-lsp@0.7.0
   scoop:
-    script: |-
+    script: |
       scoop bucket add kcl-lang https://github.com/kcl-lang/scoop-bucket.git
       scoop install kcl-lang/kcl-lsp
+
 gpg:
   apt-get:
     script: |
