@@ -4,11 +4,21 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    cloudelf = {
+        homebrew = {
+            script = r"""sudo --user linuxbrew --login HOMEBREW_NO_INSTALL_UPGRADE=1 brew install taylormonacelli/homebrew-tools/cloudelf
+"""
+        }
+        curl = {
+            script = r"""url=https://github.com/taylormonacelli/cloudelf/releases/latest/download/cloudelf_Linux_x86_64.tar.gz
+curl -fsSL $url | tar -C /usr/local/bin --no-same-owner -xz cloudelf
+
+"""
+        }
+    }
     packer = {
         curl = {
-            script = r"""#!/usr/bin/env bash
-
-# https://developer.hashicorp.com/packer/install
+            script = r"""# https://developer.hashicorp.com/packer/install
 # https://releases.hashicorp.com/packer/
 
 cd /tmp
