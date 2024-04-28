@@ -4,6 +4,16 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    timoni = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+arkade get timoni
+mv /root/.arkade/bin/timoni /usr/local/bin/
+
+"""
+        }
+    }
     arkadade = {
         curl = {
             script = r"""#!/usr/bin/env bash
