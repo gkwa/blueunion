@@ -4,6 +4,25 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    rye = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+RYE_HOME="$HOME/.rye"
+mkdir -p "$RYE_HOME"
+curl -sSf https://rye-up.com/get | RYE_INSTALL_OPTION="--yes" RYE_HOME="$RYE_HOME" bash
+
+if [[ ":$PATH:" != *":$RYE_HOME/shims:"* ]]; then
+    echo 'export PATH="$RYE_HOME/shims:$PATH"' >>"$HOME/.bashrc"
+fi
+
+source "$RYE_HOME/env"
+rye --version
+
+
+"""
+        }
+    }
     logstash = {
         curl = {
             script = r"""#!/usr/bin/env bash
