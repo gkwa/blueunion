@@ -4,6 +4,17 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    kustomize = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+pushd /usr/local/bin
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+popd
+
+"""
+        }
+    }
     terraform = {
         "apt-get" = "script |"
     }
