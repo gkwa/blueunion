@@ -4,6 +4,15 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    arkadade = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+curl -sLS https://get.arkade.dev | sudo sh
+
+"""
+        }
+    }
     kustomize = {
         curl = {
             script = r"""#!/usr/bin/env bash
