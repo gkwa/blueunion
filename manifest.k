@@ -4,6 +4,15 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    tilt = {
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
+
+"""
+        }
+    }
     cilium = {
         curl = {
             script = r"""#!/usr/bin/env bash
