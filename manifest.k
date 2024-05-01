@@ -4,6 +4,23 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    docker = {
+        homebrew = {
+            script = r"""brew install docker
+
+"""
+        }
+        curl = {
+            script = r"""#!/usr/bin/env bash
+
+curl -fsSL https://get.docker.com/ | sh
+systemctl start docker.service
+docker run hello-world
+
+
+"""
+        }
+    }
     allbranding = {
         curl = {
             script = r"""#!/usr/bin/env bash
