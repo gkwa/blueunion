@@ -11,9 +11,7 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
         }
         curl = {
-            script = r"""#!/usr/bin/env bash
-
-curl -fsSL https://get.docker.com/ | sh
+            script = r"""curl -fsSL https://get.docker.com/ | sh
 systemctl start docker.service
 docker run hello-world
 
