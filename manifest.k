@@ -21,9 +21,7 @@ docker run hello-world
     }
     allbranding = {
         curl = {
-            script = r"""#!/usr/bin/env bash
-
-url=https://github.com/taylormonacelli/allbranding/releases/latest/download/allbranding_Linux_x86_64.tar.gz
+            script = r"""url=https://github.com/taylormonacelli/allbranding/releases/latest/download/allbranding_Linux_x86_64.tar.gz
 checksums_url=https://github.com/taylormonacelli/allbranding/releases/latest/download/checksums.txt
 
 tmp=$(mktemp -d /tmp/allbranding-XXXX)
