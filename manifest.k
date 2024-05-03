@@ -4,6 +4,32 @@ Editing this file might prove futile when you re-run the KCL auto-gen generate c
 """
 
 {
+    kpt = {
+        homebrew = {
+            script = r"""sudo --login --user linuxbrew brew tap GoogleContainerTools/kpt https://github.com/GoogleContainerTools/kpt.git
+sudo --login --user linuxbrew brew install kpt
+
+"""
+        }
+        curl = {
+            script = r"""# https://kpt.dev/installation/kpt-cli
+# https://github.com/kptdev/kpt/blob/main/Formula/kpt.rb
+
+releases_url=https://api.github.com/repos/GoogleContainerTools/kpt/releases
+binary=kpt_linux_amd64
+
+url=$(
+    /home/linuxbrew/.linuxbrew/bin/allbranding query \
+    --releases-url=$releases_url \
+    --asset-regex=$binary | jq -r .browser_download_url
+)
+curl -fsSL -o kpt $url
+install --mode 0755 kpt /usr/local/bin/kpt
+kpt version
+
+"""
+        }
+    }
     docker = {
         homebrew = {
             script = r"""brew install docker
